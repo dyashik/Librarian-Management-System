@@ -83,8 +83,9 @@
     <input type="text" name="name" placeholder="Name" required><br>
     <input type="email" name="email" placeholder="Email" required><br>
     <input type="text" name="phone" placeholder="Phone"><br>
-    <input type="text" name="address_id" placeholder="Address ID" required><br>
-    <input type="text" name="account_status" placeholder="Account Status" required><br>
+    <input type="text" name="address" placeholder="Address" required><br>
+    <input type="text" name="zip_code" placeholder="Zip Code" required><br>
+    <input type="text" name="status" placeholder="Account Status" required><br>
     <input type="submit" value="Add User">
 </form>    
 
@@ -94,7 +95,8 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address ID</th>
+            <th>Address</th>
+            <th>Zip Code</th>
             <th>Account Status</th>
             <th>Update</th>
             <th>Delete</th>
@@ -107,18 +109,20 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.phone }}</td>
-                <td>{{ user.address_id }}</td>
-                <td>{{ user.account_status }}</td>
+                <td>{{ user.address }}</td>
+                <td>{{ user.zip_code }}</td>
+                <td>{{ user.status }}</td>
                 <td class="align-middle text-center" style="vertical-align: middle;">
                     <input type="button" class="show-update-fields" value="Show Update Fields">
                     <form type="hidden" class="update-form" method="POST" action="/updateUserTable">
                         <input type="hidden" name="user_id" value="{{ user.id }}">
                         <div class="update-fields" style="display: none;">
-                            <input type="text" name="new_title" placeholder="New Title" value="{{ user.name }}">
-                            <input type="text" name="new_genre" placeholder="New Genre"  value="{{ user.email }}">
-                            <input type="text" name="new_publisher" placeholder="New Publisher"  value="{{ user.phone }}">
-                            <input type="text" name="new_publication_year" placeholder="New Publication Year"  value="{{ user.address_id }}">
-                            <input type="text" name="new_copies_available" placeholder="New Copies Available" value="{{ user.account_status }}">
+                            <input type="text" name="new_name" placeholder="New Name" value="{{ user.name }}">
+                            <input type="text" name="new_email" placeholder="New Email"  value="{{ user.email }}">
+                            <input type="text" name="new_phone_number" placeholder="New Phone Number"  value="{{ user.phone }}">
+                            <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
+                            <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
+                            <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
                             <input type="submit" value="Update">
                         </div>
                     </form>

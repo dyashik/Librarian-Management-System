@@ -39,8 +39,7 @@ class Address(db.Model):
     street = db.Column(db.String(100), nullable=False)
     city = db.Column(db.String(50), nullable=False)
     state = db.Column(db.String(50), nullable=False)
-    # ... other fields related to an address
-
+    
     def __repr__(self):
         return f"{self.street}, {self.city}, {self.state}"
 
@@ -50,11 +49,13 @@ class User(db.Model):
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20))
-    address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
-    account_status = db.Column(db.String(20))
+    address = db.Column(db.String(200))
+    zip_code = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)  # Update this line
+    status = db.Column(db.String(20))
 
     def __repr__(self):
         return self.name
+
 
 
 def create_tables():
@@ -117,13 +118,15 @@ def update_book_table():
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
+    user_id = request.form.get("user_id")
     name = request.form.get("name")
     email = request.form.get("email")
     phone = request.form.get("phone")
-    address_id = request.form.get("address_id")
-    account_status = request.form.get("account_status")
+    zip_code = request.form.get("zip_code")
+    address = request.form.get("address")
+    status = request.form.get("status")
 
-    new_user = User(name=name, email=email, phone=phone, address_id=address_id, account_status=account_status)
+    new_user = User(id=user_id, name=name, email=email, phone=phone, address=address, zip_code=zip_code, status=status)
     db.session.add(new_user)
     db.session.commit()
 
@@ -135,32 +138,19 @@ def update_user_table():
     new_name = request.form.get("new_name")
     new_email = request.form.get("new_email")
     new_phone = request.form.get("new_phone")
-    new_address_id = request.form.get("new_address_id")
-    new_account_status = request.form.get("new_account_status")
-
-    
+    new_address = request.form.get("new_address")
+    new_zip = request.form.get("new_zip_code")
+    new_status = request.form.get("new_status")
 
     user = User.query.get(user_id)
     if user:
-        print("User found. Attempting update...")
-        try:
-            if new_name is not None:
-                user.name = new_name
-            if new_email is not None:
-                user.email = new_email
-            if new_phone is not None:
-                user.phone = new_phone
-            if new_address_id is not None:
-                user.address_id = new_address_id
-            if new_account_status is not None:
-                user.account_status = new_account_status
-            print(f"Received values: user_id={user_id}, new_name={new_name}, new_email={new_email}, ...")
-            db.session.commit()
-            print("User updated successfully!")
-        except Exception as e:
-            print(f"Error updating user: {e}")
-    else:
-        print("User not found!")
+        user.name = new_name
+        user.email = new_email
+        user.phone = new_phone
+        user.address = new_address
+        user.zip_code = new_zip
+        user.status = new_status
+        db.session.commit()
 
     return redirect("/")
 
