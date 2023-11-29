@@ -10,159 +10,173 @@
 
 <body>
 
-        <div class="Header">
-            <h1>Book Manager</h1>
-        </div>
+<div class="Header">
+    <h1>Book Manager</h1>
+</div>
 
-        <form method="POST" action="/updateBookTable">
-            <input type="text" name="title" placeholder="Title" required><br>
-            <input type="text" name="genre" placeholder="Genre"><br>
-            <input type="text" name="publisher" placeholder="Publisher"><br>
-            <input type="text" name="publication_year" placeholder="Publication Year"><br>
-            <input type="number" name="copies_available" placeholder="Copies Available"><br>
-            <input type="text" name="author_name" placeholder="Author" required><br>
-            <input type="submit" value="Add Book" class="add-book-button">
-        </form>
+<form method="POST" action="/updateBookTable" class="form">
+    <div class="input-group">
+        <input type="text" name="title" placeholder="Title" required><br>
+        <input type="text" name="genre" placeholder="Genre"><br>
+        <input type="text" name="publisher" placeholder="Publisher"><br>
+        <input type="text" name="publication_year" placeholder="Publication Year"><br>
+        <input type="number" name="copies_available" placeholder="Copies Available"><br>
+        <input type="text" name="author_name" placeholder="Author" required><br>
+        <input type="submit" value="Add Book" class="add-book-button">
+    </div>
+</form>
 
-        <h2>Books</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Genre</th>
-                    <th>Publisher</th>
-                    <th>Publication Year</th>
-                    <th>Copies Available</th>
-                    <th>Author</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                    <tr>
-                        <td>{{ book.title }}</td>
-                        <td>{{ book.genre }}</td>
-                        <td>{{ book.publisher }}</td>
-                        <td>{{ book.publication_year }}</td>
-                        <td>{{ book.copies_available }}</td>
-                        <td>{{ book.author.name }}</td>
-                        <td class="align-middle text-center" style="vertical-align: middle;">
-                            <input type="button" class="show-update-fields" value="Show Update Fields">
-                            <form type="hidden" class="update-form" method="POST" action="/updateBook">
-                                <input type="hidden" name="book_id" value="{{ book.id }}">
-                                <div class="update-fields" style="display: none;">
-                                    <input type="text" name="new_title" placeholder="New Title" value="{{ book.title }}">
-                                    <input type="text" name="new_genre" placeholder="New Genre"  value="{{ book.genre }}">
-                                    <input type="text" name="new_publisher" placeholder="New Publisher"  value="{{ book.publisher }}">
-                                    <input type="text" name="new_publication_year" placeholder="New Publication Year"  value="{{ book.publication_year }}">
-                                    <input type="text" name="new_copies_available" placeholder="New Copies Available" value="{{ book.copies_available }}">
-                                    <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ book.author.name }}">
-                                    <input type="submit" value="Update">
-                                </div>
-                            </form>
-                        </td>
-                        <td class="align-middle text-center" style="vertical-align: middle;">
-                            <form method="POST" action="/delete">
-                                <input type="hidden" name="book_id" value="{{ book.id }}">
-                                <input type="submit" value="Delete">
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<h2>Books</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Publisher</th>
+        <th>Publication Year</th>
+        <th>Copies Available</th>
+        <th>Author</th>
+        <th>Update</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+    <tr>
+        <td>{{ book.title }}</td>
+        <td>{{ book.genre }}</td>
+        <td>{{ book.publisher }}</td>
+        <td>{{ book.publication_year }}</td>
+        <td>{{ book.copies_available }}</td>
+        <td>{{ book.author.name }}</td>
+        <td class="align-middle text-center" style="vertical-align: middle;">
+            <input type="button" class="show-update-fields" value="Show Update Fields">
+            <form type="hidden" class="update-form" method="POST" action="/updateBook">
+                <input type="hidden" name="book_id" value="{{ book.id }}">
+                <div class="update-fields" style="display: none;">
+                    <input type="text" name="new_title" placeholder="New Title" value="{{ book.title }}" required>
+                    <input type="text" name="new_genre" placeholder="New Genre"  value="{{ book.genre }}" required>
+                    <input type="text" name="new_publisher" placeholder="New Publisher"  value="{{ book.publisher }}">
+                    <input type="text" name="new_publication_year" placeholder="New Publication Year"  value="{{ book.publication_year }}">
+                    <input type="text" name="new_copies_available" placeholder="New Copies Available" value="{{ book.copies_available }}" required>
+                    <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ book.author.name }}" required>
+                    <input type="submit" value="Update">
+                </div>
+            </form>
+        </td>
+        <td style="vertical-align: middle;">
+            <form method="POST" action="/delete">
+                <input type="hidden" name="book_id" value="{{ book.id }}">
+                <input type="submit" value="Delete">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 <!-- Users Table -->
 <div class="Header">
-    <h1>Users</h1>
+
     <h3>Add User</h3>
 </div>
-
-<form method="POST" action="/addUser">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="text" name="phone" placeholder="Phone"><br>
-    <input type="text" name="address" placeholder="Address" required><br>
-    <input type="text" name="zip_code" placeholder="Zip Code" required><br>
-    <input type="text" name="status" placeholder="Account Status" required><br>
-    <input type="submit" value="Add User">
-</form>    
-
+<form method="POST" action="/addUser" class="form">
+    <div class="input-group">
+        <input type="text" name="name" placeholder="Name" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="text" name="phone" placeholder="Phone"><br>
+        <input type="text" name="address" placeholder="Address" required><br>
+        <input type="text" name="zip_code" placeholder="Zip Code" required><br>
+        <input type="text" name="status" placeholder="Account Status" required><br>
+        <input type="submit" value="Add User">
+    </div>
+</form> 
+<h2>Users</h2>
 <table class="table">
     <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Zip Code</th>
-            <th>Account Status</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Zip Code</th>
+        <th>Account Status</th>
+        <th>Update</th>
+        <th>Delete</th>
+    </tr>
     </thead>
     <tbody>
-        {% for user in users %}
-            <tr>
-                <!-- Display user details in table rows -->
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.phone }}</td>
-                <td>{{ user.address }}</td>
-                <td>{{ user.zip_code }}</td>
-                <td>{{ user.status }}</td>
-                <td class="align-middle text-center" style="vertical-align: middle;">
-                    <input type="button" class="show-update-fields" value="Show Update Fields">
-                    <form type="hidden" class="update-form" method="POST" action="/updateUserTable">
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <div class="update-fields" style="display: none;">
-                            <input type="text" name="new_name" placeholder="New Name" value="{{ user.name }}">
-                            <input type="text" name="new_email" placeholder="New Email"  value="{{ user.email }}">
-                            <input type="text" name="new_phone_number" placeholder="New Phone Number"  value="{{ user.phone }}">
-                            <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
-                            <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
-                            <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
-                            <input type="submit" value="Update">
-                        </div>
-                    </form>
-                </td>
-                <td>
-                    <!-- Delete form for each user -->
-                    <form method="POST" action="/deleteUser">
-                        <input type="hidden" name="user_id" value="{{ user.id }}"> <!-- Change here -->
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-
-            </tr>
-        {% endfor %}
+    {% for user in users %}
+    <tr>
+        <!-- Display user details in table rows -->
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.phone }}</td>
+        <td>{{ user.address }}</td>
+        <td>{{ user.zip_code }}</td>
+        <td>{{ user.status }}</td>
+        <td class="align-middle text-center" style="vertical-align: middle;">
+            <input type="button" class="show-update-fields" value="Show Update Fields">
+            <form type="hidden" class="update-form" method="POST" action="/updateUserTable">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <div class="update-fields" style="display: none;">
+                    <input type="text" name="new_name" placeholder="New Name" value="{{ user.name }}">
+                    <input type="text" name="new_email" placeholder="New Email"  value="{{ user.email }}">
+                    <input type="text" name="new_phone_number" placeholder="New Phone Number"  value="{{ user.phone }}">
+                    <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
+                    <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
+                    <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
+                    <input type="submit" value="Update">
+                </div>
+            </form>
+        </td>
+        <td>
+            <!-- Delete form for each user -->
+            <form method="POST" action="/deleteUser">
+                <input type="hidden" name="user_id" value="{{ user.id }}"> <!-- Change here -->
+                <input type="submit" value="Delete">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.querySelectorAll('.show-update-fields').forEach(button => {
-            button.addEventListener('click', function(event) {
-                const form = event.target.parentElement.parentElement;
-                const updateFields = form.querySelector('.update-fields');
-                const buttonText = event.target;
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.querySelectorAll('.show-update-fields').forEach(button => {
+        button.addEventListener('click', function(event) {
+            const form = event.target.parentElement.parentElement;
+            const updateFields = form.querySelector('.update-fields');
+            const buttonText = event.target;
 
-                if (updateFields.style.display === 'none' || updateFields.style.display === '') {
-                    updateFields.style.display = 'block';
-                    buttonText.value = 'Hide Update Fields';
-                } else {
-                    updateFields.style.display = 'none';
-                    buttonText.value = 'Show Update Fields';
-                }
-            });
+            if (updateFields.style.display === 'none' || updateFields.style.display === '') {
+                updateFields.style.display = 'block';
+                buttonText.value = 'Hide Update Fields';
+            } else {
+                updateFields.style.display = 'none';
+                buttonText.value = 'Show Update Fields';
+            }
         });
-    </script>
-    
-    
-    
+    });
+</script>
+<script>
+    // Get query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const message = urlParams.get('message');
+
+    // Show alerts based on the status
+    if (status === 'error') {
+        alert(`${message}`);
+    } else if (status === 'success') {
+        alert(`${message}`);
+    }
+</script>
+
+
 </body>
 
 </html>

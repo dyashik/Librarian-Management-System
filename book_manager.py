@@ -1,5 +1,7 @@
 import os
-from flask import Flask, render_template, request, redirect
+from sqlite3 import IntegrityError
+import time
+from flask import Flask, flash, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -15,11 +17,11 @@ db = SQLAlchemy(app)
     
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(80), unique=True, nullable=False)
     genre = db.Column(db.String(50))
     publisher = db.Column(db.String(50))
     publication_year = db.Column(db.Integer)
-    copies_available = db.Column(db.Integer)
+    copies_available = db.Column(db.Integer, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
     author = db.relationship('Author', backref=db.backref('books', lazy=True))
 
@@ -48,7 +50,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20))
+    phone = db.Column(db.String(10), unique=True)
     address = db.Column(db.String(200))
     zip_code = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)  # Update this line
     status = db.Column(db.String(20))
@@ -75,26 +77,35 @@ def updateBook():
     new_copies_available = request.form.get("new_copies_available")
     new_author_name = request.form.get("new_author_name")
 
+
+
+    # Check if the title exists for a book other than the current book being updated
+    existing_book = Book.query.filter(Book.title == new_title, Book.id != request.form.get("book_id")).first()
+
+    if existing_book:
+        return redirect("/?status=error&message=Title already in use")  # Redirect with status and message in the URL
+
+    # Continue with the update or insertion since the title is unique
+    book_id = request.form.get("book_id")
     book = Book.query.get(book_id)
     if book:
         book.title = new_title
         book.genre = new_genre
-        book.publisher = new_publisher 
+        book.publisher = new_publisher
         book.publication_year = new_publication_year
         book.copies_available = new_copies_available
-
-        # Check if the author exists, if not, create a new one
+        
         author = Author.query.filter_by(name=new_author_name).first()
+        
         if not author:
             author = Author(name=new_author_name)
             db.session.add(author)
-
+        
         book.author = author
 
         db.session.commit()
 
-    return redirect("/")
-
+    return redirect("/?status=success&message=Book updated successfully")
 @app.route("/updateBookTable", methods=["POST"])
 def update_book_table():
     title = request.form.get("title")
@@ -108,13 +119,22 @@ def update_book_table():
     if not author:
         author = Author(name=author_name)
         db.session.add(author)
+        
+    
+    existing_book = Book.query.filter_by(title=title).first()
+    
+    print(existing_book)
+    
+    if existing_book:
+        return redirect("/?status=error&message=Title already in use")  # Redirect with status and message in the URL
 
     new_book = Book(title=title, genre=genre, publisher=publisher,
                     publication_year=publication_year, copies_available=copies_available, author=author)
+    
     db.session.add(new_book)
     db.session.commit()
 
-    return redirect("/")
+    return redirect("/?status=success&message=User added Sucessfully")
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
@@ -126,9 +146,17 @@ def add_user():
     address = request.form.get("address")
     status = request.form.get("status")
 
-    new_user = User(id=user_id, name=name, email=email, phone=phone, address=address, zip_code=zip_code, status=status)
-    db.session.add(new_user)
-    db.session.commit()
+    existing_user_email = User.query.get(email)
+    existing_user_phone = User.query.get(phone)
+    
+    if existing_user_email or existing_user_phone:
+        return redirect("/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
+    else :
+        new_user = User(id=user_id, name=name, email=email, phone=phone, address=address, zip_code=zip_code, status=status)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect("/?status=success&message=User added Sucessfully")  # Redirect with status and message in the URL
+        
 
     return redirect("/")
 
@@ -137,13 +165,18 @@ def update_user_table():
     user_id = request.form.get("user_id")
     new_name = request.form.get("new_name")
     new_email = request.form.get("new_email")
-    new_phone = request.form.get("new_phone")
+    new_phone = request.form.get("new_phone_number")
     new_address = request.form.get("new_address")
     new_zip = request.form.get("new_zip_code")
     new_status = request.form.get("new_status")
 
+    user_email = User.query.get(new_email)
+    user_phone = User.query.get(new_phone)
     user = User.query.get(user_id)
-    if user:
+    
+    if user_email is not user or user_phone is not user:
+        return redirect("/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
+    else :
         user.name = new_name
         user.email = new_email
         user.phone = new_phone
@@ -151,8 +184,7 @@ def update_user_table():
         user.zip_code = new_zip
         user.status = new_status
         db.session.commit()
-
-    return redirect("/")
+        return redirect("/?status=success&message=User was successfully added!.")  # Redirect with status and message in the URL
 
 
 
