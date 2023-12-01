@@ -3,6 +3,8 @@ from sqlite3 import IntegrityError
 import time
 from flask import Flask, flash, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from datetime import date
+from sqlalchemy import create_engine, Column, Date, Integer
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -57,10 +59,22 @@ class User(db.Model):
 
     def __repr__(self):
         return self.name
+    
 
+class Loan(db.Model):
+    loan_id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.Integer, db.ForeignKey('user.email'), nullable=False)
+    book_title = db.Column(db.Integer, db.ForeignKey('book.title'), nullable=False)
+    checkout_date = db.Column(db.String, nullable=False)
+    due_date = db.Column(db.String, nullable=False)
 
+    user = db.relationship('User', backref=db.backref('loans', lazy=True))
+    book = db.relationship('Book', backref=db.backref('loans', lazy=True))
 
-def create_tables():
+    def __repr__(self):
+        return self.loan_id
+    
+def create_tables(): 
     with app.app_context():
         db.create_all()
         # Create tables for Address, User, and other models if they're not already created
@@ -68,6 +82,8 @@ def create_tables():
 
         
 @app.route("/updateBook", methods=["POST"])
+
+# creates a book
 def updateBook():
     book_id = request.form.get("book_id")
     new_title = request.form.get("new_title")  
@@ -78,7 +94,7 @@ def updateBook():
     new_author_name = request.form.get("new_author_name")
 
 
-
+ 
     # Check if the title exists for a book other than the current book being updated
     existing_book = Book.query.filter(Book.title == new_title, Book.id != request.form.get("book_id")).first()
 
@@ -135,6 +151,45 @@ def update_book_table():
     db.session.commit()
 
     return redirect("/?status=success&message=User added Sucessfully")
+
+@app.route("/addLoan", methods=["POST"])
+def add_loan():
+    loan_id = request.form.get("loan_id")
+    user_email = request.form.get("user_email")
+
+    book_title = request.form.get("book_title")
+    checkout_date = request.form.get("checkout_date")
+    due_date = request.form.get("due_date")
+
+    # Check if the user with the given email or phone exists
+    user = User.query.filter((User.email == user_email)).first()
+    if not user:
+        return redirect("/?status=error&message=User not found")  # Redirect with status and message
+
+    # Check if the book with the given title exists
+    book = Book.query.filter(Book.title==book_title).first()
+    if not book:
+        return redirect("/?status=error&message=Book not found")  # Redirect with status and message
+
+    # # Check if the due_date is after the checkout_date
+    # if due_date <= checkout_date:
+    #     return redirect("/?status=error&message=Due date should be after checkout date")
+
+    # Continue with adding the loan if everything is valid
+    new_loan = Loan(
+        loan_id=loan_id,
+        user_email=user_email,
+        book_title=book_title,
+        checkout_date=checkout_date,
+        due_date=due_date
+    )
+
+    db.session.add(new_loan)
+    db.session.commit()
+
+    return redirect("/?status=success&message=Loan added successfully")
+
+
 
 @app.route("/addUser", methods=["POST"])
 def add_user():

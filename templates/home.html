@@ -91,6 +91,7 @@
         <input type="submit" value="Add User">
     </div>
 </form> 
+
 <h2>Users</h2>
 <table class="table">
     <thead>
@@ -141,6 +142,65 @@
     {% endfor %}
     </tbody>
 </table>
+
+<div class="Header">
+<!-- Loans Table -->
+    <h3>Loans</h3>
+</div>
+<form method="POST" action="/addLoan" class="form">
+    <div class="input-group">
+        <input type="text" name="book_title" placeholder="Book Name" required><br>
+        <input type="text" name="user_email" placeholder="User Email" required><br>
+        <input type="text" name="checkout_date" placeholder="Checkout Date" required><br>
+        <input type="text" name="due_date" placeholder="Due Date"><br>
+        <input type="submit" value="Add Loans">
+    </div>
+</form>
+
+<h2>Loans</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Checkout Date</th>
+        <th>Due Date</th>
+        <th>Return Date</th>
+
+    </tr>
+    </thead>
+    <tbody>
+        {% for loan in loans %}
+        <tr>
+            <td>{{ loan.loan_id }}</td>
+            <td>{{ loan.book_name }}</td>
+            <td>{{ loan.user_name }}</td>
+            <td>{{ loan.checkout_date }}</td>
+            <td>{{ loan.due_date }}</td>
+
+            <td class="align-middle text-center" style="vertical-align: middle;">
+                <input type="button" class="show-update-fields" value="Show Update Fields">
+                <form type="hidden" class="update-form" method="POST" action="/updateLoanTable">
+                    <input type="hidden" name="loan_id" value="{{ loan.id }}">
+                    <div class="update-fields" style="display: none;">
+                        <!-- ask yashik: do i need to add the primary key and foreign key -->
+                        <input type="text" name="new_checkout_date" placeholder="New Checkout Date" value="{{ loan.checkout_date }}">
+                        <input type="text" name="new_due_date" placeholder="New Due Date"  value="{{ loan.due_date }}">
+                        <input type="submit" value="Update">
+                    </div>
+                </form>
+            </td>
+            
+            <td>
+                <!-- deleting loan for each user -->
+                <form method="POST" action="/deleteLoan">
+                    <input type="hidden" name="loan_id" value="{{ loan.id }}">
+                    <input type="submit" value="Delete">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
