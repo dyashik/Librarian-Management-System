@@ -67,7 +67,7 @@ def create_tables():
 
 # creates a book not actually updating a book
 @app.route("/updateBook", methods=["POST"])
-def updateBook():
+def update_book():
     book_id = request.form.get("book_id")
     new_title = request.form.get("new_title")  
     new_genre = request.form.get("new_genre")
@@ -105,8 +105,9 @@ def updateBook():
         db.session.commit()
 
     return redirect("/?status=success&message=Book updated successfully")
+
 @app.route("/updateBookTable", methods=["POST"])
-def update_book_table():
+def create_book():
     title = request.form.get("title")
     genre = request.form.get("genre")
     publisher = request.form.get("publisher")
@@ -133,7 +134,7 @@ def update_book_table():
     db.session.add(new_book)
     db.session.commit()
 
-    return redirect("/?status=success&message=User added Sucessfully")
+    return redirect("/?status=success&message=Book added Sucessfully")
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
