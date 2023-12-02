@@ -15,7 +15,6 @@
 </div>
 
 <div class="Header">
-
     <h3>Add Book</h3>
 </div>
 <form method="POST" action="/updateBookTable" class="form">
@@ -88,7 +87,7 @@
     <div class="input-group">
         <input type="text" name="name" placeholder="Name" required><br>
         <input type="email" name="email" placeholder="Email" required><br>
-        <input type="text" name="phone" placeholder="Phone"><br>
+        <input type="text" name="phone" placeholder="Phone" required><br>
         <input type="text" name="address" placeholder="Address" required><br>
         <input type="text" name="zip_code" placeholder="Zip Code" required><br>
         <input type="text" name="status" placeholder="Account Status" required><br>
@@ -203,9 +202,8 @@
 </div>
 <form method="POST" action="/addAddress" class="form">
     <div class="input-group">
-        <input type="text" name="street" placeholder="Street" required><br>
-        <input type="text" name="city" placeholder="City" required><br>
-        <input type="text" name="state" placeholder="State" required><br>
+        <input type="text" name="address" placeholder="Address" required><br>
+        <input type="text" name="zip_code" placeholder="Zip Code" required><br>
         <input type="submit" value="Add Address">
     </div>
 </form>
@@ -216,24 +214,25 @@
         <tr>
             <th>Address ID</th>
             <th>Address</th>
+            <th>Zip Code</th>
             <th>Update</th>
             <th>Delete</th>
         </tr>
     </thead>
     <tbody>
 
-        {% for address in address %}
+        {% for address in addresses %}
             <tr>
                 <td>{{ address.id }}</td>
-                <td>{{ address.street }}</td>
-                <td>{{ address.city }}</td>
-                <td>{{ address.state }}</td>
+                <td>{{ address.address }}</td>
+                <td>{{ address.zip_code }}</td>
                 <td class="align-middle text-center" style="vertical-align: middle;">
                     <input type="button" class="show-update-fields" value="Show Update Fields">
                     <form type="hidden" class="update-form" method="POST" action="/updateAddressTable">
-                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                        <!-- <input type="hidden" name="address_id" value="{{ address.id }}"> -->
                         <div class="update-fields" style="display: none;">
-                            <input type="text" name="new_address_name" placeholder="New Address Name" value="{{ address.name }}" required>
+                            <input type="text" name="new_address_name" placeholder="New Address Name" value="{{ address.address }}" required>
+                            <input type="text" name="new_zip_code" placeholder="New Zip Code" value="{{ address.zip_code }}" required>
                             <input type="submit" value="Update">
                         </div>
                     </form>
@@ -260,8 +259,8 @@
     <div class="input-group">
         <input type="text" name="book_title" placeholder="Book Name" required><br>
         <input type="text" name="user_email" placeholder="User Email" required><br>
-        <input type="text" name="checkout_date" placeholder="Checkout Date" required><br>
-        <input type="text" name="due_date" placeholder="Due Date"><br>
+        <input type="text" name="checkout_date" placeholder="Checkout Date (MM/DD/YYYY)" required><br>
+        <input type="text" name="due_date" placeholder="Due Date (MM/DD/YYYY)"><br>
         <input type="submit" value="Add Loans">
     </div>
 </form>
@@ -270,18 +269,21 @@
 <table class="table">
     <thead>
     <tr>
+        <th>Loan ID</th>
+        <th>Book Title</th>
+        <th>User Email</th>
         <th>Checkout Date</th>
         <th>Due Date</th>
-        <th>Return Date</th>
-
+        <th>Update</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
         {% for loan in loans %}
         <tr>
             <td>{{ loan.loan_id }}</td>
-            <td>{{ loan.book_name }}</td>
-            <td>{{ loan.user_name }}</td>
+            <td>{{ loan.book_title }}</td>
+            <td>{{ loan.user_email }}</td>
             <td>{{ loan.checkout_date }}</td>
             <td>{{ loan.due_date }}</td>
 

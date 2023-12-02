@@ -1,10 +1,11 @@
+import datetime
 import os
 from sqlite3 import IntegrityError
 import time
 from flask import Flask, flash, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date
-from sqlalchemy import create_engine, Column, Date, Integer
+from datetime import datetime
+from sqlalchemy import *
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -38,33 +39,30 @@ class Author(db.Model):
     
 class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    street = db.Column(db.String(100), nullable=False)
-    city = db.Column(db.String(50), nullable=False)
-    state = db.Column(db.String(50), nullable=False)
+    address = db.Column(db.String(100), nullable=False)
+    zip_code = db.Column(db.Integer, nullable=False)
     
     def __repr__(self):
-        return f"{self.street}, {self.city}, {self.state}"
+        return f"{self.address}, {self.zip_code}"
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(10), unique=True)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(10),)
     address = db.Column(db.String(200))
-    zip_code = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)  # Update this line
+    zip_code = db.Column(db.Integer, nullable=False)  # Update this line
     status = db.Column(db.String(20))
-    # address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
-    # address = db.relationship('Address', backref=db.backref('users', lazy=True))
-
+    
     def __repr__(self):
         return self.name
     
 
 class Loan(db.Model):
     loan_id = db.Column(db.Integer, primary_key=True)
-    user_email = db.Column(db.Integer, db.ForeignKey('user.email'), nullable=False)
-    book_title = db.Column(db.Integer, db.ForeignKey('book.title'), nullable=False)
+    user_email = db.Column(db.String(120), db.ForeignKey('user.email'), nullable=False)
+    book_title = db.Column(db.String(80), db.ForeignKey('book.title'), nullable=False)
     checkout_date = db.Column(db.String, nullable=False)
     due_date = db.Column(db.String, nullable=False)
 
@@ -72,7 +70,8 @@ class Loan(db.Model):
     book = db.relationship('Book', backref=db.backref('loans', lazy=True))
 
     def __repr__(self):
-        return self.loan_id
+        return str(self.loan_id)
+
     
 # DO NOT TOUCH
 def create_tables():
@@ -81,10 +80,8 @@ def create_tables():
         # Create tables for Address, User, and other models if they're not already created
         db.session.commit()
 
-# creates a book not actually updating a book
+# updating a book
 @app.route("/updateBook", methods=["POST"])
-
-# creates a book
 def update_book():
     book_id = request.form.get("book_id")
     new_title = request.form.get("new_title")  
@@ -94,10 +91,8 @@ def update_book():
     new_copies_available = request.form.get("new_copies_available")
     new_author_name = request.form.get("new_author_name")
 
-
- 
     # Check if the title exists for a book other than the current book being updated
-    existing_book = Book.query.filter(Book.title == new_title, Book.id != request.form.get("book_id")).first()
+    existing_book = Book.query.filter(Book.title == new_title, Book.id != book_id).first()
 
     if existing_book:
         return redirect("/?status=error&message=Title already in use")  # Redirect with status and message in the URL
@@ -164,7 +159,8 @@ def add_loan():
     due_date = request.form.get("due_date")
 
     # Check if the user with the given email or phone exists
-    user = User.query.filter((User.email == user_email)).first()
+    user = User.query.filter_by(email=user_email)
+    print(user)
     if not user:
         return redirect("/?status=error&message=User not found")  # Redirect with status and message
 
@@ -173,9 +169,21 @@ def add_loan():
     if not book:
         return redirect("/?status=error&message=Book not found")  # Redirect with status and message
 
-    # # Check if the due_date is after the checkout_date
-    # if due_date <= checkout_date:
-    #     return redirect("/?status=error&message=Due date should be after checkout date")
+    # book.copies_avaliable = book.copies_avaliable - 1
+    try:
+        # Check the format of the input date strings
+        check_in_date = datetime.strptime(checkout_date, "%m/%d/%Y")
+        due_date = datetime.strptime(due_date, "%m/%d/%Y")
+    except ValueError:
+        return redirect("/?status=error&message=Invalid Date Format") 
+
+    # Compare the dates
+    if check_in_date > due_date:
+        return redirect("/?status=error&message=Check In after Due Date") 
+    elif check_in_date == due_date:
+        return redirect("/?status=error&message=Check In same day as Due Date") 
+    
+    
 
     # Continue with adding the loan if everything is valid
     new_loan = Loan(
@@ -203,19 +211,24 @@ def add_user():
     address = request.form.get("address")
     status = request.form.get("status")
 
-    existing_user_email = User.query.get(email)
-    existing_user_phone = User.query.get(phone)
+    existing_user_email = User.query.filter_by(email=email).first()
+    existing_user_phone = User.query.filter_by(phone=phone).first()
     
     if existing_user_email or existing_user_phone:
         return redirect("/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
     else :
+        
+        existing_user_address = User.query.filter_by(address=address, zip_code=zip_code).first()
+        
+        if not existing_user_address:
+            new_address = Address(address=address, zip_code=zip_code)
+            db.session.add(new_address)
+            db.session.commit()
+        
         new_user = User(id=user_id, name=name, email=email, phone=phone, address=address, zip_code=zip_code, status=status)
         db.session.add(new_user)
         db.session.commit()
         return redirect("/?status=success&message=User added Sucessfully")  # Redirect with status and message in the URL
-        
-
-    return redirect("/")
 
 @app.route("/updateUserTable", methods=["POST"])
 def update_user_table():
@@ -243,6 +256,22 @@ def update_user_table():
         db.session.commit()
         return redirect("/?status=success&message=User was successfully added!.")  # Redirect with status and message in the URL
 
+
+@app.route("/addAddress", methods=["POST"])
+def add_address():
+    id = request.form.get("address_id")
+    address = request.form.get("address")
+    zip_code = request.form.get("zip_code")
+
+    existing_address = Address.query.filter_by(address=address).first()
+    
+    if existing_address:
+        return redirect("/?status=error&message=Address already in use")  # Redirect with status and message in the URL
+    else :
+        new_addy = Address(id=id, address=address, zip_code=zip_code)
+        db.session.add(new_addy)
+        db.session.commit()
+        return redirect("/?status=success&message=User was successfully added!.")
 
 
 @app.route("/deleteUser", methods=["POST"])
@@ -312,54 +341,6 @@ def delete_author():
     return redirect("/")
 
 
-
-
-# Address stuff
-@app.route("/addAddress", methods=["POST"])
-@app.route("/addAddress", methods=["POST"])
-def add_address():
-    street = request.form.get("street")
-    city = request.form.get("city")
-    state = request.form.get("state")
-
-    new_address = Address(street=street, city=city, state=state)
-    db.session.add(new_address)
-    db.session.commit()
-
-    return redirect("/?status=success&message=Address added Successfully")
-
-
-
-@app.route("/updateAddressTable", methods=["POST"])
-def update_address_table():
-    address_id = request.form.get("address_id")
-    new_address_name = request.form.get("new_address_name")
-
-    address = Address.query.get(address_id)
-    if address:
-        existing_address = Address.query.filter(Address.name == new_address_name, Address.id != address_id).first()
-
-        if existing_address:
-            return redirect("/?status=error&message=Address name already in use")  # Redirect with status and message in the URL
-
-        address.name = new_address_name
-        db.session.commit()
-
-    return redirect("/?status=success&message=Address updated successfully")
-
-
-@app.route("/deleteAddress", methods=["POST"])
-def delete_address():
-    address_id = request.form.get("address_id")
-
-    address = Address.query.get(address_id)
-    if address:
-        db.session.delete(address)
-        db.session.commit()
-
-    return redirect("/")
-
-
 # Delete route
 @app.route("/delete", methods=["POST"])
 def delete():
@@ -381,8 +362,9 @@ def home():
     books = Book.query.all()
     users = User.query.all()  # Fetch all
     authors = Author.query.all()
-    address = Address.query.all()
-    return render_template("home.html", books=books, users=users, authors=authors, address=address)
+    loans = Loan.query.all()
+    addresses = Address.query.all()
+    return render_template("home.html", books=books, users=users, authors=authors, loans=loans, addresses=addresses)
 
 
 if __name__ == "__main__":
