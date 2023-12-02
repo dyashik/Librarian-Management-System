@@ -159,7 +159,7 @@ def add_loan():
     due_date = request.form.get("due_date")
 
     # Check if the user with the given email or phone exists
-    user = User.query.filter_by(email=user_email)
+    user = User.query.filter_by(email=user_email).first()
     print(user)
     if not user:
         return redirect("/?status=error&message=User not found")  # Redirect with status and message
@@ -169,22 +169,26 @@ def add_loan():
     if not book:
         return redirect("/?status=error&message=Book not found")  # Redirect with status and message
 
-    # book.copies_avaliable = book.copies_avaliable - 1
+    updated_copies = book.copies_available - 1
+    if updated_copies >= 0:
+        db.session.execute(update(Book).where(Book.title == book_title).values(copies_available=updated_copies))
+        db.session.commit()
+    else:
+        return redirect("/?status=error&message=Not Enough Copies") 
+    
     try:
         # Check the format of the input date strings
         check_in_date = datetime.strptime(checkout_date, "%m/%d/%Y")
-        due_date = datetime.strptime(due_date, "%m/%d/%Y")
+        return_date = datetime.strptime(due_date, "%m/%d/%Y")
     except ValueError:
         return redirect("/?status=error&message=Invalid Date Format") 
 
     # Compare the dates
-    if check_in_date > due_date:
+    if check_in_date > return_date:
         return redirect("/?status=error&message=Check In after Due Date") 
-    elif check_in_date == due_date:
+    elif check_in_date == return_date:
         return redirect("/?status=error&message=Check In same day as Due Date") 
     
-    
-
     # Continue with adding the loan if everything is valid
     new_loan = Loan(
         loan_id=loan_id,
@@ -200,6 +204,60 @@ def add_loan():
     return redirect("/?status=success&message=Loan added successfully")
 
 
+@app.route("/updateLoanTable", methods=["POST"])
+def update_loan():
+    loan_id = request.form.get("loan_id")
+    new_checkout_date = request.form.get("new_checkout_date")
+    new_due_date = request.form.get("new_due_date")
+    
+    try:
+        # Check the format of the input date strings
+        check_in_date = datetime.strptime(new_checkout_date, "%m/%d/%Y")
+        return_date = datetime.strptime(new_due_date, "%m/%d/%Y")
+    except ValueError:
+        return redirect("/?status=error&message=Invalid Date Format") 
+
+    # Compare the dates
+    if check_in_date > return_date:
+        return redirect("/?status=error&message=Check In after Due Date") 
+    elif check_in_date == return_date:
+        return redirect("/?status=error&message=Check In same day as Due Date") 
+    print(loan_id)
+    loan = Loan.query.get(loan_id)
+    
+    if loan:
+        # Update the checkout_date and due_date
+        loan.checkout_date = new_checkout_date
+        loan.due_date = new_due_date
+        print(loan.due_date)
+        # Commit the changes
+        db.session.commit()
+        return redirect("/?status=success&message=Loan updated successfully")
+    else:
+        return redirect("/?status=error&message=Loan not found")
+
+@app.route("/deleteLoan", methods=["POST"])
+def delete_loan():
+    loan_id = request.form.get("loan_id")
+    print(loan_id)
+    loan = Loan.query.filter_by(loan_id=loan_id).first()
+    print(loan)
+    if loan:
+        book = Book.query.filter_by(title=loan.book_title).first()
+
+        if book:
+            # Update available copies in the Book table
+            if book:
+                # Update available copies in the Book table
+                updated_copies = book.copies_available + 1
+                book.copies_available = updated_copies  # Update the copies_available field in the Book model
+                db.session.commit()
+
+            # Delete the loan record
+            db.session.delete(loan)
+            db.session.commit()
+
+    return redirect("/")
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
@@ -240,13 +298,15 @@ def update_user_table():
     new_zip = request.form.get("new_zip_code")
     new_status = request.form.get("new_status")
 
-    user_email = User.query.get(new_email)
-    user_phone = User.query.get(new_phone)
-    user = User.query.get(user_id)
+    user = User.query.filter_by(id=user_id).first()
+    user_email = User.query.filter_by(email=new_email).first()
+    user_phone = User.query.filter_by(phone=new_phone).first()
     
-    if user_email is not user or user_phone is not user:
-        return redirect("/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
-    else :
+    if user_email and user_email != user:
+        return redirect("/?status=error&message=Email already in use")
+    elif user_phone and user_phone != user:
+        return redirect("/?status=error&message=Phone number already in use")
+    else:
         user.name = new_name
         user.email = new_email
         user.phone = new_phone
@@ -254,8 +314,7 @@ def update_user_table():
         user.zip_code = new_zip
         user.status = new_status
         db.session.commit()
-        return redirect("/?status=success&message=User was successfully added!.")  # Redirect with status and message in the URL
-
+        return redirect("/?status=success&message=User was successfully updated!")
 
 @app.route("/addAddress", methods=["POST"])
 def add_address():

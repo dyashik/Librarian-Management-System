@@ -290,7 +290,7 @@
             <td class="align-middle text-center" style="vertical-align: middle;">
                 <input type="button" class="show-update-fields" value="Show Update Fields">
                 <form type="hidden" class="update-form" method="POST" action="/updateLoanTable">
-                    <input type="hidden" name="loan_id" value="{{ loan.id }}">
+                    <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
                     <div class="update-fields" style="display: none;">
                         <!-- ask yashik: do i need to add the primary key and foreign key -->
                         <input type="text" name="new_checkout_date" placeholder="New Checkout Date" value="{{ loan.checkout_date }}">
@@ -303,7 +303,7 @@
             <td>
                 <!-- deleting loan for each user -->
                 <form method="POST" action="/deleteLoan">
-                    <input type="hidden" name="loan_id" value="{{ loan.id }}">
+                    <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
                     <input type="submit" value="Delete">
                 </form>
             </td>
