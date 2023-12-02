@@ -66,8 +66,8 @@ class Loan(db.Model):
     checkout_date = db.Column(db.String, nullable=False)
     due_date = db.Column(db.String, nullable=False)
 
-    user = db.relationship('User', backref=db.backref('loans', lazy=True))
-    book = db.relationship('Book', backref=db.backref('loans', lazy=True))
+    # user = db.relationship('User', backref=db.backref('loans', lazy=True))
+    # book = db.relationship('Book', backref=db.backref('loans', lazy=True))
 
     def __repr__(self):
         return str(self.loan_id)
