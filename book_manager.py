@@ -10,11 +10,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(os.path.join(os.pa
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for development
 
+#create database
 db = SQLAlchemy(app)
 
 
-
-    
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=True, nullable=False)
@@ -59,14 +58,14 @@ class User(db.Model):
         return self.name
 
 
-
+# DO NOT TOUCH
 def create_tables():
     with app.app_context():
         db.create_all()
         # Create tables for Address, User, and other models if they're not already created
         db.session.commit()
 
-        
+# creates a book not actually updating a book
 @app.route("/updateBook", methods=["POST"])
 def updateBook():
     book_id = request.form.get("book_id")
@@ -200,6 +199,59 @@ def delete_user():
     return redirect("/")
 
 
+#Author stuff
+@app.route("/addAuthor", methods=["POST"])
+def add_author():
+    author_id = request.form.get("author_id")
+    author_name = request.form.get("author_name")
+
+    # Check if the author id already exists
+    existing_author_id = Author.query.get(author_id)
+    if existing_author_id:
+        return redirect("/?status=error&message=Author ID already in use")  # Redirect with status and message in the URL
+
+    # Check if the author name already exists
+    existing_author_name = Author.query.filter_by(name=author_name).first()
+    if existing_author_name:
+        return redirect("/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
+
+    # Continue with the addition since the author id and name are unique
+    new_author = Author(id=author_id, name=author_name)
+    db.session.add(new_author)
+    db.session.commit()
+
+    return redirect("/?status=success&message=Author added Successfully")
+
+
+
+@app.route("/updateAuthorTable", methods=["POST"])
+def update_author_table():
+    author_id = request.form.get("author_id")
+    new_author_name = request.form.get("new_author_name")
+
+    author = Author.query.get(author_id)
+    if author:
+        existing_author = Author.query.filter(Author.name == new_author_name, Author.id != author_id).first()
+
+        if existing_author:
+            return redirect("/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
+
+        author.name = new_author_name
+        db.session.commit()
+
+    return redirect("/?status=success&message=Author updated successfully")
+
+
+@app.route("/deleteAuthor", methods=["POST"])
+def delete_author():
+    author_id = request.form.get("author_id")
+
+    author = Author.query.get(author_id)
+    if author:
+        db.session.delete(author)
+        db.session.commit()
+
+    return redirect("/")
 
 
 # Delete route
@@ -222,7 +274,8 @@ def delete():
 def home():
     books = Book.query.all()
     users = User.query.all()  # Fetch all
-    return render_template("home.html", books=books, users=users)
+    authors = Author.query.all()
+    return render_template("home.html", books=books, users=users, authors=authors)
 
 
 if __name__ == "__main__":
