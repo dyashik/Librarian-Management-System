@@ -387,6 +387,16 @@ def update_author_table():
 
     return redirect("/?status=success&message=Author updated successfully")
 
+@app.route("/deleteAddress", methods=["POST"])
+def delete_address():
+    address_id = request.form.get("address_id")
+
+    address = Address.query.get(address_id)
+    if address:
+        db.session.delete(address)
+        db.session.commit()
+
+    return redirect("/")
 
 @app.route("/deleteAuthor", methods=["POST"])
 def delete_author():
