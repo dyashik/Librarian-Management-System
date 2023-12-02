@@ -147,7 +147,6 @@
     </tbody>
 </table>
 
-<!-- authors table -->
 <!-- Authors Table -->
 <div class="Header">
     <h3>Add Author</h3>
@@ -196,6 +195,62 @@
     </tbody>
 </table>
 
+
+<!-- Address Table -->
+
+<div class="Header">
+    <h3>Add Address</h3>
+</div>
+<form method="POST" action="/addAddress" class="form">
+    <div class="input-group">
+        <input type="text" name="street" placeholder="Street" required><br>
+        <input type="text" name="city" placeholder="City" required><br>
+        <input type="text" name="state" placeholder="State" required><br>
+        <input type="submit" value="Add Address">
+    </div>
+</form>
+
+<h2>Address</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Address ID</th>
+            <th>Address</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for address in address %}
+            <tr>
+                <td>{{ address.id }}</td>
+                <td>{{ address.street }}</td>
+                <td>{{ address.city }}</td>
+                <td>{{ address.state }}</td>
+                <td class="align-middle text-center" style="vertical-align: middle;">
+                    <input type="button" class="show-update-fields" value="Show Update Fields">
+                    <form type="hidden" class="update-form" method="POST" action="/updateAddressTable">
+                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                        <div class="update-fields" style="display: none;">
+                            <input type="text" name="new_address_name" placeholder="New Address Name" value="{{ address.name }}" required>
+                            <input type="submit" value="Update">
+                        </div>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" action="/deleteAddress">
+                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!-- end -->
 
 <div class="Header">
 <!-- Loans Table -->

@@ -15,7 +15,6 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for development
 #create database
 db = SQLAlchemy(app)
 
-
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=True, nullable=False)
@@ -55,6 +54,8 @@ class User(db.Model):
     address = db.Column(db.String(200))
     zip_code = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)  # Update this line
     status = db.Column(db.String(20))
+    # address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=False)
+    # address = db.relationship('Address', backref=db.backref('users', lazy=True))
 
     def __repr__(self):
         return self.name
@@ -311,6 +312,54 @@ def delete_author():
     return redirect("/")
 
 
+
+
+# Address stuff
+@app.route("/addAddress", methods=["POST"])
+@app.route("/addAddress", methods=["POST"])
+def add_address():
+    street = request.form.get("street")
+    city = request.form.get("city")
+    state = request.form.get("state")
+
+    new_address = Address(street=street, city=city, state=state)
+    db.session.add(new_address)
+    db.session.commit()
+
+    return redirect("/?status=success&message=Address added Successfully")
+
+
+
+@app.route("/updateAddressTable", methods=["POST"])
+def update_address_table():
+    address_id = request.form.get("address_id")
+    new_address_name = request.form.get("new_address_name")
+
+    address = Address.query.get(address_id)
+    if address:
+        existing_address = Address.query.filter(Address.name == new_address_name, Address.id != address_id).first()
+
+        if existing_address:
+            return redirect("/?status=error&message=Address name already in use")  # Redirect with status and message in the URL
+
+        address.name = new_address_name
+        db.session.commit()
+
+    return redirect("/?status=success&message=Address updated successfully")
+
+
+@app.route("/deleteAddress", methods=["POST"])
+def delete_address():
+    address_id = request.form.get("address_id")
+
+    address = Address.query.get(address_id)
+    if address:
+        db.session.delete(address)
+        db.session.commit()
+
+    return redirect("/")
+
+
 # Delete route
 @app.route("/delete", methods=["POST"])
 def delete():
@@ -332,7 +381,8 @@ def home():
     books = Book.query.all()
     users = User.query.all()  # Fetch all
     authors = Author.query.all()
-    return render_template("home.html", books=books, users=users, authors=authors)
+    address = Address.query.all()
+    return render_template("home.html", books=books, users=users, authors=authors, address=address)
 
 
 if __name__ == "__main__":
