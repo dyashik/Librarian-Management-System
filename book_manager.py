@@ -257,7 +257,7 @@ def delete_loan():
             db.session.delete(loan)
             db.session.commit()
 
-    return redirect("/")
+    return redirect("/loans.html")
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
@@ -342,7 +342,7 @@ def delete_user():
         db.session.delete(user)
         db.session.commit()
 
-    return redirect("/")
+    return redirect("/users.html")
 
 
 #Author stuff
@@ -435,6 +435,35 @@ def home():
     addresses = Address.query.all()
     return render_template("home.html", books=books, users=users, authors=authors, loans=loans, addresses=addresses)
 
+@app.route("/books", methods=["GET", "POST"])
+def book_page():
+    home()
+    books = Book.query.all()
+    return render_template("books.html", books=books)
+
+@app.route("/users", methods=["GET", "POST"])
+def user_page():
+    home()
+    users = User.query.all()
+    return render_template("users.html", users=users)
+
+@app.route("/authors", methods=["GET", "POST"])
+def authors_page():
+    home()
+    authors = Author.query.all()
+    return render_template("authors.html", authors=authors)
+
+@app.route("/address", methods=["GET", "POST"])
+def addresses_page():
+    home()
+    adderesses = Address.query.all()
+    return render_template("addresses.html", adderesses=adderesses)
+
+@app.route("/loans", methods=["GET", "POST"])
+def loan_page():
+    home()
+    loans = Loan.query.all()
+    return render_template("loans.html", loans=loans)
 
 if __name__ == "__main__":
     create_tables()  # Create tables before running the app

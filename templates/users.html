@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Users Table</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid"> <!-- Use container-fluid to extend the full width -->
+            <a class="navbar-brand" href="/">Book Manager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto"> <!-- Use ml-auto to align links to the right -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/address">Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loans">Loans</a>
+                    </li>  
+                </ul>
+            </div>
+    
+        </div>
+    </nav>
+</head>
+
+<body>
+    <!-- Users Table -->
+    <form method="POST" action="/addUser" class="form">
+        <div class="Header">
+            <h4>Add User</h4>
+        </div>
+        <div class="input-group">
+            <input type="text" name="name" placeholder="Name" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="text" name="phone" placeholder="Phone" required><br>
+            <input type="text" name="address" placeholder="Address" required><br>
+            <input type="text" name="zip_code" placeholder="Zip Code" required><br>
+            <input type="text" name="status" placeholder="Account Status" required><br>
+            <input type="submit" value="Add User">
+        </div>
+    </form> 
+
+    <h2>Users</h2>
+    <input type="text" id="emailSearch" placeholder="Search By Email">
+    <br>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Zip Code</th>
+            <th>Account Status</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr>
+            <!-- Display user details in table rows -->
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.address }}</td>
+            <td>{{ user.zip_code }}</td>
+            <td>{{ user.status }}</td>
+            <td class="align-middle text-center" style="vertical-align: middle;">
+                <input type="button" class="show-update-fields" value="Show Update Fields">
+                <form type="hidden" class="update-form" method="POST" action="/updateUserTable">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <div class="update-fields" style="display: none;">
+                        <input type="text" name="new_name" placeholder="New Name" value="{{ user.name }}">
+                        <input type="text" name="new_email" placeholder="New Email"  value="{{ user.email }}">
+                        <input type="text" name="new_phone_number" placeholder="New Phone Number"  value="{{ user.phone }}">
+                        <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
+                        <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
+                        <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
+                        <input type="submit" value="Update">
+                    </div>
+                </form>
+            </td>
+            <td>
+                <!-- Delete form for each user -->
+                <form method="POST" action="/deleteUser">
+                    <input type="hidden" name="user_id" value="{{ user.id }}"> <!-- Change here -->
+                    <input type="submit" value="Delete">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+    
+        // Show alerts based on the status
+        if (status === 'error') {
+            alert(`${message}`);
+        } else if (status === 'success') {
+            alert(`${message}`);
+        }
+    </script>
+    <script>
+        document.querySelectorAll('.show-update-fields').forEach(button => {
+            button.addEventListener('click', function(event) {
+                const form = event.target.parentElement.parentElement;
+                const updateFields = form.querySelector('.update-fields');
+                const buttonText = event.target;
+    
+                if (updateFields.style.display === 'none' || updateFields.style.display === '') {
+                    updateFields.style.display = 'block';
+                    buttonText.value = 'Hide Update Fields';
+                } else {
+                    updateFields.style.display = 'none';
+                    buttonText.value = 'Show Update Fields';
+                }
+            });
+        });
+    </script>
+    <script>
+        // Get the input field and add an event listener for the 'input' event
+        document.getElementById('emailSearch').addEventListener('input', function() {
+            // Get the value of the search input
+            const searchValue = this.value.toLowerCase();
+    
+            // Get all the rows in the table body
+            const rows = document.querySelectorAll('.table tbody tr');
+    
+            // Loop through each row and hide/show based on the search value
+            rows.forEach(function(row) {
+                const userEmail = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming email is in the second column (index 1)
+    
+                // Check if the email contains the search value
+                if (userEmail.includes(searchValue)) {
+                    row.style.display = ''; // Show the row if it matches the search
+                } else {
+                    row.style.display = 'none'; // Hide the row if it doesn't match
+                }
+            });
+        });
+    </script>
+</body>
+</html>

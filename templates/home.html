@@ -6,326 +6,48 @@
     <title>Book Manager</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/styles.css">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid"> <!-- Use container-fluid to extend the full width -->
+            <a class="navbar-brand" href="/">Book Manager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto"> <!-- Use ml-auto to align links to the right -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/address">Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loans">Loans</a>
+                    </li>
+                </ul>
+            </div>
+    
+        </div>
+    </nav>
 </head>
 
 <body>
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome Librarian!</h1>
+        <p class="lead">The Library Database</p>
+    </div>
 
-<div class="Header">
+<!-- <div class="Header">
     <h1>Book Manager</h1>
-</div>
-
-
-
-<div class="Header">
-    <h3>Add Book</h3>
-</div>
-<form method="POST" action="/updateBookTable" class="form">
-    <div class="input-group">
-        <input type="text" name="title" placeholder="Title" required><br>
-        <input type="text" name="genre" placeholder="Genre"><br>
-        <input type="text" name="publisher" placeholder="Publisher"><br>
-        <input type="text" name="publication_year" placeholder="Publication Year"><br>
-        <input type="number" name="copies_available" placeholder="Copies Available"><br>
-        <input type="text" name="author_name" placeholder="Author" required><br>
-        <input type="submit" value="Add Book" class="add-book-button">
-    </div>
-</form>
-
-<h2>Books</h2>
-<input type="text" id="bookSearch" placeholder="Search By Book Title">
-<br>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Genre</th>
-        <th>Publisher</th>
-        <th>Publication Year</th>
-        <th>Copies Available</th>
-        <th>Author</th>
-        <th>Update</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for book in books %}
-    <tr>
-        <td>{{ book.title }}</td>
-        <td>{{ book.genre }}</td>
-        <td>{{ book.publisher }}</td>
-        <td>{{ book.publication_year }}</td>
-        <td>{{ book.copies_available }}</td>
-        <td>{{ book.author.name }}</td>
-        <td class="align-middle text-center" style="vertical-align: middle;">
-            <input type="button" class="show-update-fields" value="Show Update Fields">
-            <form type="hidden" class="update-form" method="POST" action="/updateBook">
-                <input type="hidden" name="book_id" value="{{ book.id }}">
-                <div class="update-fields" style="display: none;">
-                    <input type="text" name="new_title" placeholder="New Title" value="{{ book.title }}" required>
-                    <input type="text" name="new_genre" placeholder="New Genre"  value="{{ book.genre }}" required>
-                    <input type="text" name="new_publisher" placeholder="New Publisher"  value="{{ book.publisher }}">
-                    <input type="text" name="new_publication_year" placeholder="New Publication Year"  value="{{ book.publication_year }}">
-                    <input type="text" name="new_copies_available" placeholder="New Copies Available" value="{{ book.copies_available }}" required>
-                    <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ book.author.name }}" required>
-                    <input type="submit" value="Update">
-                </div>
-            </form>
-        </td>
-        <td style="vertical-align: middle;">
-            <form method="POST" action="/delete">
-                <input type="hidden" name="book_id" value="{{ book.id }}">
-                <input type="submit" value="Delete">
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<!-- Users Table -->
-<div class="Header">
-
-    <h3>Add User</h3>
-</div>
-<form method="POST" action="/addUser" class="form">
-    <div class="input-group">
-        <input type="text" name="name" placeholder="Name" required><br>
-        <input type="email" name="email" placeholder="Email" required><br>
-        <input type="text" name="phone" placeholder="Phone" required><br>
-        <input type="text" name="address" placeholder="Address" required><br>
-        <input type="text" name="zip_code" placeholder="Zip Code" required><br>
-        <input type="text" name="status" placeholder="Account Status" required><br>
-        <input type="submit" value="Add User">
-    </div>
-</form> 
-
-<h2>Users</h2>
-<input type="text" id="emailSearch" placeholder="Search By Email">
-<br>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Zip Code</th>
-        <th>Account Status</th>
-        <th>Update</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for user in users %}
-    <tr>
-        <!-- Display user details in table rows -->
-        <td>{{ user.name }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.phone }}</td>
-        <td>{{ user.address }}</td>
-        <td>{{ user.zip_code }}</td>
-        <td>{{ user.status }}</td>
-        <td class="align-middle text-center" style="vertical-align: middle;">
-            <input type="button" class="show-update-fields" value="Show Update Fields">
-            <form type="hidden" class="update-form" method="POST" action="/updateUserTable">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
-                <div class="update-fields" style="display: none;">
-                    <input type="text" name="new_name" placeholder="New Name" value="{{ user.name }}">
-                    <input type="text" name="new_email" placeholder="New Email"  value="{{ user.email }}">
-                    <input type="text" name="new_phone_number" placeholder="New Phone Number"  value="{{ user.phone }}">
-                    <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
-                    <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
-                    <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
-                    <input type="submit" value="Update">
-                </div>
-            </form>
-        </td>
-        <td>
-            <!-- Delete form for each user -->
-            <form method="POST" action="/deleteUser">
-                <input type="hidden" name="user_id" value="{{ user.id }}"> <!-- Change here -->
-                <input type="submit" value="Delete">
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<!-- Authors Table -->
-<div class="Header">
-    <h3>Add Author</h3>
-</div>
-<form method="POST" action="/addAuthor" class="form">
-    <div class="input-group">
-        
-        <input type="text" name="author_name" placeholder="Author Name" required><br>
-        <input type="submit" value="Add Author">
-    </div>
-</form>
-
-<h2>Authors</h2>
-<input type="text" id="authorNameSearch" placeholder="Search By Author">
-<br>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Author ID</th>
-            <th>Author Name</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for author in authors %}
-            <tr>
-                <td>{{ author.id }}</td>
-                <td>{{ author.name }}</td>
-                <td class="align-middle text-center" style="vertical-align: middle;">
-                    <input type="button" class="show-update-fields" value="Show Update Fields">
-                    <form type="hidden" class="update-form" method="POST" action="/updateAuthorTable">
-                        <input type="hidden" name="author_id" value="{{ author.id }}">
-                        <div class="update-fields" style="display: none;">
-                            <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ author.name }}" required>
-                            <input type="submit" value="Update">
-                        </div>
-                    </form>
-                </td>
-                <td>
-                    <form method="POST" action="/deleteAuthor">
-                        <input type="hidden" name="author_id" value="{{ author.id }}">
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-
-<!-- Address Table -->
-
-<div class="Header">
-    <h3>Add Address</h3>
-</div>
-<form method="POST" action="/addAddress" class="form">
-    <div class="input-group">
-        <input type="text" name="address" placeholder="Address" required><br>
-        <input type="text" name="zip_code" placeholder="Zip Code" required><br>
-        <input type="submit" value="Add Address">
-    </div>
-</form>
-
-<h2>Address</h2>
-<div style="display: flex; gap: 10px;">
-    <input type="text" id="addressSearch" placeholder="Search By Address">
-    <input type="text" id="zipCodeSearch" placeholder="Search By Zip Code">
-</div>
-<br>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Address ID</th>
-            <th>Address</th>
-            <th>Zip Code</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-
-        {% for address in addresses %}
-            <tr>
-                <td>{{ address.id }}</td>
-                <td>{{ address.address }}</td>
-                <td>{{ address.zip_code }}</td>
-                <td class="align-middle text-center" style="vertical-align: middle;">
-                    <input type="button" class="show-update-fields" value="Show Update Fields">
-                    <form type="hidden" class="update-form" method="POST" action="/updateAddressTable">
-                        <!-- <input type="hidden" name="address_id" value="{{ address.id }}"> -->
-                        <div class="update-fields" style="display: none;">
-                            <input type="text" name="new_address_name" placeholder="New Address Name" value="{{ address.address }}" required>
-                            <input type="text" name="new_zip_code" placeholder="New Zip Code" value="{{ address.zip_code }}" required>
-                            <input type="submit" value="Update">
-                        </div>
-                    </form>
-                </td>
-                <td>
-                    <form method="POST" action="/deleteAddress">
-                        <input type="hidden" name="address_id" value="{{ address.id }}">
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-
-<!-- end -->
-
-<div class="Header">
-<!-- Loans Table -->
-    <h3>Loans</h3>
-</div>
-<form method="POST" action="/addLoan" class="form">
-    <div class="input-group">
-        <input type="text" name="book_title" placeholder="Book Name" required><br>
-        <input type="text" name="user_email" placeholder="User Email" required><br>
-        <input type="text" name="checkout_date" placeholder="Checkout Date (MM/DD/YYYY)" required><br>
-        <input type="text" name="due_date" placeholder="Due Date (MM/DD/YYYY)"><br>
-        <input type="submit" value="Add Loans">
-    </div>
-</form>
-
-<h2>Loans</h2>
-<input type="text" id="loanEmailSearch" placeholder="Search by user email..." onkeyup="filterLoansByUserEmail()">
-<br>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Loan ID</th>
-        <th>Book Title</th>
-        <th>User Email</th>
-        <th>Checkout Date</th>
-        <th>Due Date</th>
-        <th>Update</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for loan in loans %}
-        <tr>
-            <td>{{ loan.loan_id }}</td>
-            <td>{{ loan.book_title }}</td>
-            <td>{{ loan.user_email }}</td>
-            <td>{{ loan.checkout_date }}</td>
-            <td>{{ loan.due_date }}</td>
-
-            <td class="align-middle text-center" style="vertical-align: middle;">
-                <input type="button" class="show-update-fields" value="Show Update Fields">
-                <form type="hidden" class="update-form" method="POST" action="/updateLoanTable">
-                    <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
-                    <div class="update-fields" style="display: none;">
-                        <!-- ask yashik: do i need to add the primary key and foreign key -->
-                        <input type="text" name="new_checkout_date" placeholder="New Checkout Date" value="{{ loan.checkout_date }}">
-                        <input type="text" name="new_due_date" placeholder="New Due Date"  value="{{ loan.due_date }}">
-                        <input type="submit" value="Update">
-                    </div>
-                </form>
-            </td>
-            
-            <td>
-                <!-- deleting loan for each user -->
-                <form method="POST" action="/deleteLoan">
-                    <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
-                    <input type="submit" value="Delete">
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+</div> -->
 
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -359,121 +81,6 @@
         alert(`${message}`);
     } else if (status === 'success') {
         alert(`${message}`);
-    }
-</script>
-<script>
-    // Get the input field and add an event listener for the 'input' event
-    document.getElementById('bookSearch').addEventListener('input', function() {
-        // Get the value of the search input
-        const searchValue = this.value.toLowerCase();
-
-        // Get all the rows in the table body
-        const rows = document.querySelectorAll('.table tbody tr');
-
-        // Loop through each row and hide/show based on the search value
-        rows.forEach(function(row) {
-            const bookTitle = row.querySelector('td:first-child').textContent.toLowerCase();
-
-            // Check if the book title contains the search value
-            if (bookTitle.includes(searchValue)) {
-                row.style.display = ''; // Show the row if it matches the search
-            } else {
-                row.style.display = 'none'; // Hide the row if it doesn't match
-            }
-        });
-    });
-</script>
-
-<script>
-    // Get the input field and add an event listener for the 'input' event
-    document.getElementById('emailSearch').addEventListener('input', function() {
-        // Get the value of the search input
-        const searchValue = this.value.toLowerCase();
-
-        // Get all the rows in the table body
-        const rows = document.querySelectorAll('.table tbody tr');
-
-        // Loop through each row and hide/show based on the search value
-        rows.forEach(function(row) {
-            const userEmail = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming email is in the second column (index 1)
-
-            // Check if the email contains the search value
-            if (userEmail.includes(searchValue)) {
-                row.style.display = ''; // Show the row if it matches the search
-            } else {
-                row.style.display = 'none'; // Hide the row if it doesn't match
-            }
-        });
-    });
-</script>
-<script>
-    // Get the input field and add an event listener for the 'input' event
-    document.getElementById('authorNameSearch').addEventListener('input', function() {
-        // Get the value of the search input
-        const searchValue = this.value.toLowerCase();
-
-        // Get all the rows in the table body
-        const rows = document.querySelectorAll('.table tbody tr');
-
-        // Loop through each row and hide/show based on the search value
-        rows.forEach(function(row) {
-            const authorName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming author name is in the second column (index 1)
-
-            // Check if the author name contains the search value
-            if (authorName.includes(searchValue)) {
-                row.style.display = ''; // Show the row if it matches the search
-            } else {
-                row.style.display = 'none'; // Hide the row if it doesn't match
-            }
-        });
-    });
-</script>
-
-<script>
-    // Get the input fields and add event listeners for the 'input' event
-    document.getElementById('addressSearch').addEventListener('input', filterAddress);
-    document.getElementById('zipCodeSearch').addEventListener('input', filterAddress);
-
-    function filterAddress() {
-        const addressSearchValue = document.getElementById('addressSearch').value.toLowerCase();
-        const zipCodeSearchValue = document.getElementById('zipCodeSearch').value.toLowerCase();
-
-        const rows = document.querySelectorAll('.table tbody tr');
-
-        rows.forEach(function(row) {
-            const address = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming address is in the second column (index 1)
-            const zipCode = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Assuming zip code is in the third column (index 2)
-
-            const showRow = address.includes(addressSearchValue) && zipCode.includes(zipCodeSearchValue);
-
-            row.style.display = showRow ? '' : 'none';
-        });
-    }
-</script>
-
-
-<script>
-    function filterLoansByUserEmail() {
-        // Get input value and convert it to lowercase for case-insensitive comparison
-        var input = document.getElementById("loanEmailSearch");
-        var filter = input.value.toLowerCase();
-
-        // Get all rows from the table
-        var rows = document.getElementsByTagName("tr");
-
-        // Loop through all table rows and hide those that don't match the search query
-        for (var i = 0; i < rows.length; i++) {
-            var userEmail = rows[i].getElementsByTagName("td")[2]; // Assuming email is in the third column
-
-            if (userEmail) {
-                var emailValue = userEmail.textContent || userEmail.innerText;
-                if (emailValue.toLowerCase().indexOf(filter) > -1) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
-        }
     }
 </script>
 

@@ -1,0 +1,150 @@
+<!-- Authors Table -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Authors Table</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid"> <!-- Use container-fluid to extend the full width -->
+            <a class="navbar-brand" href="/">Book Manager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto"> <!-- Use ml-auto to align links to the right -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/address">Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loans">Loans</a>
+                    </li>  
+                </ul>
+            </div>
+    
+        </div>
+    </nav>
+</head>
+
+
+<form method="POST" action="/addAuthor" class="form">
+    <div class="Header">
+        <h4>Add Author</h4>
+    </div>
+    <div class="input-group">
+        <input type="text" name="author_name" placeholder="Author Name" required><br>
+        <input type="submit" value="Add Author">
+    </div>
+</form>
+
+<h2>Authors</h2>
+<input type="text" id="authorNameSearch" placeholder="Search By Author">
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Author ID</th>
+            <th>Author Name</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for author in authors %}
+            <tr>
+                <td>{{ author.id }}</td>
+                <td>{{ author.name }}</td>
+                <td class="align-middle text-center" style="vertical-align: middle;">
+                    <input type="button" class="show-update-fields" value="Show Update Fields">
+                    <form type="hidden" class="update-form" method="POST" action="/updateAuthorTable">
+                        <input type="hidden" name="author_id" value="{{ author.id }}">
+                        <div class="update-fields" style="display: none;">
+                            <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ author.name }}" required>
+                            <input type="submit" value="Update">
+                        </div>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" action="/deleteAuthor">
+                        <input type="hidden" name="author_id" value="{{ author.id }}">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <!-- JavaScript for functionality like search, update, delete, etc. -->
+    <script>
+        // Get query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+    
+        // Show alerts based on the status
+        if (status === 'error') {
+            alert(`${message}`);
+        } else if (status === 'success') {
+            alert(`${message}`);
+        }
+    </script>
+
+    <script>
+        document.querySelectorAll('.show-update-fields').forEach(button => {
+            button.addEventListener('click', function(event) {
+                const form = event.target.parentElement.parentElement;
+                const updateFields = form.querySelector('.update-fields');
+                const buttonText = event.target;
+
+                if (updateFields.style.display === 'none' || updateFields.style.display === '') {
+                    updateFields.style.display = 'block';
+                    buttonText.value = 'Hide Update Fields';
+                } else {
+                    updateFields.style.display = 'none';
+                    buttonText.value = 'Show Update Fields';
+                }
+            });
+        });
+    </script>
+    <script>
+        // Get the input field and add an event listener for the 'input' event
+        document.getElementById('authorNameSearch').addEventListener('input', function() {
+            // Get the value of the search input
+            const searchValue = this.value.toLowerCase();
+    
+            // Get all the rows in the table body
+            const rows = document.querySelectorAll('.table tbody tr');
+    
+            // Loop through each row and hide/show based on the search value
+            rows.forEach(function(row) {
+                const authorName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming author name is in the second column (index 1)
+    
+                // Check if the author name contains the search value
+                if (authorName.includes(searchValue)) {
+                    row.style.display = ''; // Show the row if it matches the search
+                } else {
+                    row.style.display = 'none'; // Hide the row if it doesn't match
+                }
+            });
+        });
+    </script>
+
+<!-- end -->

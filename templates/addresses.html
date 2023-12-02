@@ -1,0 +1,158 @@
+<!-- Address Table -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Addresses Table</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid"> <!-- Use container-fluid to extend the full width -->
+            <a class="navbar-brand" href="/">Book Manager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto"> <!-- Use ml-auto to align links to the right -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/address">Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loans">Loans</a>
+                    </li>  
+                </ul>
+            </div>
+    
+        </div>
+    </nav>
+</head>
+
+<body>
+
+
+<form method="POST" action="/addAddress" class="form">
+    <div class="Header">
+        <h4>Add Address</h4>
+    </div>
+    <div class="input-group">
+        <input type="text" name="address" placeholder="Address" required><br>
+        <input type="text" name="zip_code" placeholder="Zip Code" required><br>
+        <input type="submit" value="Add Address">
+    </div>
+</form>
+
+<h2>Address</h2>
+<div style="display: flex; gap: 10px;">
+    <input type="text" id="addressSearch" placeholder="Search By Address">
+    <input type="text" id="zipCodeSearch" placeholder="Search By Zip Code">
+</div>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Address ID</th>
+            <th>Address</th>
+            <th>Zip Code</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for address in addresses %}
+            <tr>
+                <td>{{ address.id }}</td>
+                <td>{{ address.address }}</td>
+                <td>{{ address.zip_code }}</td>
+                <td class="align-middle text-center" style="vertical-align: middle;">
+                    <input type="button" class="show-update-fields" value="Show Update Fields">
+                    <form type="hidden" class="update-form" method="POST" action="/updateAddressTable">
+                        <!-- <input type="hidden" name="address_id" value="{{ address.id }}"> -->
+                        <div class="update-fields" style="display: none;">
+                            <input type="text" name="new_address_name" placeholder="New Address Name" value="{{ address.address }}" required>
+                            <input type="text" name="new_zip_code" placeholder="New Zip Code" value="{{ address.zip_code }}" required>
+                            <input type="submit" value="Update">
+                        </div>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST" action="/deleteAddress">
+                        <input type="hidden" name="address_id" value="{{ address.id }}">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    // Get query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const message = urlParams.get('message');
+
+    // Show alerts based on the status
+    if (status === 'error') {
+        alert(`${message}`);
+    } else if (status === 'success') {
+        alert(`${message}`);
+    }
+</script>
+
+<script>
+    // Get the input fields and add event listeners for the 'input' event
+    document.getElementById('addressSearch').addEventListener('input', filterAddress);
+    document.getElementById('zipCodeSearch').addEventListener('input', filterAddress);
+
+    function filterAddress() {
+        const addressSearchValue = document.getElementById('addressSearch').value.toLowerCase();
+        const zipCodeSearchValue = document.getElementById('zipCodeSearch').value.toLowerCase();
+
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        rows.forEach(function(row) {
+            const address = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming address is in the second column (index 1)
+            const zipCode = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Assuming zip code is in the third column (index 2)
+
+            const showRow = address.includes(addressSearchValue) && zipCode.includes(zipCodeSearchValue);
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('.show-update-fields').forEach(button => {
+        button.addEventListener('click', function(event) {
+            const form = event.target.parentElement.parentElement;
+            const updateFields = form.querySelector('.update-fields');
+            const buttonText = event.target;
+
+            if (updateFields.style.display === 'none' || updateFields.style.display === '') {
+                updateFields.style.display = 'block';
+                buttonText.value = 'Hide Update Fields';
+            } else {
+                updateFields.style.display = 'none';
+                buttonText.value = 'Show Update Fields';
+            }
+        });
+    });
+</script>
+</body>
+
+</html>
