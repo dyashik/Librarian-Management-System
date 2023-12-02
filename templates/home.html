@@ -30,6 +30,8 @@
 </form>
 
 <h2>Books</h2>
+<input type="text" id="bookSearch" placeholder="Search By Book Title">
+<br>
 <table class="table">
     <thead>
     <tr>
@@ -96,6 +98,8 @@
 </form> 
 
 <h2>Users</h2>
+<input type="text" id="emailSearch" placeholder="Search By Email">
+<br>
 <table class="table">
     <thead>
     <tr>
@@ -159,6 +163,8 @@
 </form>
 
 <h2>Authors</h2>
+<input type="text" id="authorNameSearch" placeholder="Search By Author">
+<br>
 <table class="table">
     <thead>
         <tr>
@@ -209,6 +215,11 @@
 </form>
 
 <h2>Address</h2>
+<div style="display: flex; gap: 10px;">
+    <input type="text" id="addressSearch" placeholder="Search By Address">
+    <input type="text" id="zipCodeSearch" placeholder="Search By Zip Code">
+</div>
+<br>
 <table class="table">
     <thead>
         <tr>
@@ -266,6 +277,8 @@
 </form>
 
 <h2>Loans</h2>
+<input type="text" id="loanEmailSearch" placeholder="Search by user email..." onkeyup="filterLoansByUserEmail()">
+<br>
 <table class="table">
     <thead>
     <tr>
@@ -346,7 +359,121 @@
         alert(`${message}`);
     }
 </script>
+<script>
+    // Get the input field and add an event listener for the 'input' event
+    document.getElementById('bookSearch').addEventListener('input', function() {
+        // Get the value of the search input
+        const searchValue = this.value.toLowerCase();
 
+        // Get all the rows in the table body
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        // Loop through each row and hide/show based on the search value
+        rows.forEach(function(row) {
+            const bookTitle = row.querySelector('td:first-child').textContent.toLowerCase();
+
+            // Check if the book title contains the search value
+            if (bookTitle.includes(searchValue)) {
+                row.style.display = ''; // Show the row if it matches the search
+            } else {
+                row.style.display = 'none'; // Hide the row if it doesn't match
+            }
+        });
+    });
+</script>
+
+<script>
+    // Get the input field and add an event listener for the 'input' event
+    document.getElementById('emailSearch').addEventListener('input', function() {
+        // Get the value of the search input
+        const searchValue = this.value.toLowerCase();
+
+        // Get all the rows in the table body
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        // Loop through each row and hide/show based on the search value
+        rows.forEach(function(row) {
+            const userEmail = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming email is in the second column (index 1)
+
+            // Check if the email contains the search value
+            if (userEmail.includes(searchValue)) {
+                row.style.display = ''; // Show the row if it matches the search
+            } else {
+                row.style.display = 'none'; // Hide the row if it doesn't match
+            }
+        });
+    });
+</script>
+<script>
+    // Get the input field and add an event listener for the 'input' event
+    document.getElementById('authorNameSearch').addEventListener('input', function() {
+        // Get the value of the search input
+        const searchValue = this.value.toLowerCase();
+
+        // Get all the rows in the table body
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        // Loop through each row and hide/show based on the search value
+        rows.forEach(function(row) {
+            const authorName = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming author name is in the second column (index 1)
+
+            // Check if the author name contains the search value
+            if (authorName.includes(searchValue)) {
+                row.style.display = ''; // Show the row if it matches the search
+            } else {
+                row.style.display = 'none'; // Hide the row if it doesn't match
+            }
+        });
+    });
+</script>
+
+<script>
+    // Get the input fields and add event listeners for the 'input' event
+    document.getElementById('addressSearch').addEventListener('input', filterAddress);
+    document.getElementById('zipCodeSearch').addEventListener('input', filterAddress);
+
+    function filterAddress() {
+        const addressSearchValue = document.getElementById('addressSearch').value.toLowerCase();
+        const zipCodeSearchValue = document.getElementById('zipCodeSearch').value.toLowerCase();
+
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        rows.forEach(function(row) {
+            const address = row.querySelector('td:nth-child(2)').textContent.toLowerCase(); // Assuming address is in the second column (index 1)
+            const zipCode = row.querySelector('td:nth-child(3)').textContent.toLowerCase(); // Assuming zip code is in the third column (index 2)
+
+            const showRow = address.includes(addressSearchValue) && zipCode.includes(zipCodeSearchValue);
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+</script>
+
+
+<script>
+    function filterLoansByUserEmail() {
+        // Get input value and convert it to lowercase for case-insensitive comparison
+        var input = document.getElementById("loanEmailSearch");
+        var filter = input.value.toLowerCase();
+
+        // Get all rows from the table
+        var rows = document.getElementsByTagName("tr");
+
+        // Loop through all table rows and hide those that don't match the search query
+        for (var i = 0; i < rows.length; i++) {
+            var userEmail = rows[i].getElementsByTagName("td")[2]; // Assuming email is in the third column
+
+            if (userEmail) {
+                var emailValue = userEmail.textContent || userEmail.innerText;
+                if (emailValue.toLowerCase().indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 
 </body>
 

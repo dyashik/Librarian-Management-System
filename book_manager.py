@@ -50,7 +50,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    phone = db.Column(db.String(10),)
+    phone = db.Column(db.String(10))
     address = db.Column(db.String(200))
     zip_code = db.Column(db.Integer, nullable=False)  # Update this line
     status = db.Column(db.String(20))
