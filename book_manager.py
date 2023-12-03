@@ -95,7 +95,7 @@ def update_book():
     existing_book = Book.query.filter(Book.title == new_title, Book.id != book_id).first()
 
     if existing_book:
-        return redirect("/?status=error&message=Title already in use")  # Redirect with status and message in the URL
+        return redirect("/books/?status=error&message=Title already in use")  # Redirect with status and message in the URL
 
     # Continue with the update or insertion since the title is unique
     book_id = request.form.get("book_id")
@@ -117,7 +117,7 @@ def update_book():
 
         db.session.commit()
 
-    return redirect("/?status=success&message=Book updated successfully")
+    return redirect("/books/?status=success&message=Book updated successfully")
 
 @app.route("/updateBookTable", methods=["POST"])
 def create_book():
@@ -135,11 +135,9 @@ def create_book():
         
     
     existing_book = Book.query.filter_by(title=title).first()
-    
-    print(existing_book)
-    
+        
     if existing_book:
-        return redirect("/?status=error&message=Title already in use")  # Redirect with status and message in the URL
+        return redirect("/books/?status=error&message=Title already in use")  # Redirect with status and message in the URL
 
     new_book = Book(title=title, genre=genre, publisher=publisher,
                     publication_year=publication_year, copies_available=copies_available, author=author)
@@ -147,7 +145,7 @@ def create_book():
     db.session.add(new_book)
     db.session.commit()
 
-    return redirect("/?status=success&message=Book added Sucessfully")
+    return redirect("/books/?status=success&message=Book added Sucessfully")
 
 @app.route("/addLoan", methods=["POST"])
 def add_loan():
@@ -160,34 +158,34 @@ def add_loan():
 
     # Check if the user with the given email or phone exists
     user = User.query.filter_by(email=user_email).first()
-    print(user)
+    
     if not user:
-        return redirect("/?status=error&message=User not found")  # Redirect with status and message
+        return redirect("/loans/?status=error&message=User not found")  # Redirect with status and message
 
     # Check if the book with the given title exists
     book = Book.query.filter(Book.title==book_title).first()
     if not book:
-        return redirect("/?status=error&message=Book not found")  # Redirect with status and message
+        return redirect("/loans/?status=error&message=Book not found")  # Redirect with status and message
 
     updated_copies = book.copies_available - 1
     if updated_copies >= 0:
         db.session.execute(update(Book).where(Book.title == book_title).values(copies_available=updated_copies))
         db.session.commit()
     else:
-        return redirect("/?status=error&message=Not Enough Copies") 
+        return redirect("/loans/?status=error&message=Not Enough Copies") 
     
     try:
         # Check the format of the input date strings
         check_in_date = datetime.strptime(checkout_date, "%m/%d/%Y")
         return_date = datetime.strptime(due_date, "%m/%d/%Y")
     except ValueError:
-        return redirect("/?status=error&message=Invalid Date Format") 
+        return redirect("/loans/?status=error&message=Invalid Date Format") 
 
     # Compare the dates
     if check_in_date > return_date:
-        return redirect("/?status=error&message=Check In after Due Date") 
+        return redirect("/loans/?status=error&message=Check In after Due Date") 
     elif check_in_date == return_date:
-        return redirect("/?status=error&message=Check In same day as Due Date") 
+        return redirect("/loans/?status=error&message=Check In same day as Due Date") 
     
     # Continue with adding the loan if everything is valid
     new_loan = Loan(
@@ -201,7 +199,7 @@ def add_loan():
     db.session.add(new_loan)
     db.session.commit()
 
-    return redirect("/?status=success&message=Loan added successfully")
+    return redirect("/loans/?status=success&message=Loan added successfully")
 
 
 @app.route("/updateLoanTable", methods=["POST"])
@@ -215,49 +213,45 @@ def update_loan():
         check_in_date = datetime.strptime(new_checkout_date, "%m/%d/%Y")
         return_date = datetime.strptime(new_due_date, "%m/%d/%Y")
     except ValueError:
-        return redirect("/?status=error&message=Invalid Date Format") 
+        return redirect("/loans/?status=error&message=Invalid Date Format") 
 
     # Compare the dates
     if check_in_date > return_date:
-        return redirect("/?status=error&message=Check In after Due Date") 
+        return redirect("/loans/?status=error&message=Check In after Due Date") 
     elif check_in_date == return_date:
-        return redirect("/?status=error&message=Check In same day as Due Date") 
-    print(loan_id)
+        return redirect("/loans/?status=error&message=Check In same day as Due Date") 
+
     loan = Loan.query.get(loan_id)
     
     if loan:
         # Update the checkout_date and due_date
         loan.checkout_date = new_checkout_date
         loan.due_date = new_due_date
-        print(loan.due_date)
+
         # Commit the changes
         db.session.commit()
-        return redirect("/?status=success&message=Loan updated successfully")
+        return redirect("/loans/?status=success&message=Loan updated successfully")
     else:
-        return redirect("/?status=error&message=Loan not found")
+        return redirect("/loans/?status=error&message=Loan not found")
 
 @app.route("/deleteLoan", methods=["POST"])
 def delete_loan():
     loan_id = request.form.get("loan_id")
-    print(loan_id)
+
     loan = Loan.query.filter_by(loan_id=loan_id).first()
-    print(loan)
+
     if loan:
         book = Book.query.filter_by(title=loan.book_title).first()
 
-        if book:
-            # Update available copies in the Book table
-            if book:
-                # Update available copies in the Book table
-                updated_copies = book.copies_available + 1
-                book.copies_available = updated_copies  # Update the copies_available field in the Book model
-                db.session.commit()
+        # Update available copies in the Book table
+        updated_copies = book.copies_available + 1
+        book.copies_available = updated_copies  # Update the copies_available field in the Book model
 
-            # Delete the loan record
-            db.session.delete(loan)
-            db.session.commit()
+        # Delete the loan record
+        db.session.delete(loan)
+        db.session.commit() 
 
-    return redirect("/loans.html")
+    return redirect("/loans")
 
 @app.route("/addUser", methods=["POST"])
 def add_user():
@@ -273,10 +267,9 @@ def add_user():
     existing_user_phone = User.query.filter_by(phone=phone).first()
     
     if existing_user_email or existing_user_phone:
-        return redirect("/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
-    else :
-        
-        existing_user_address = User.query.filter_by(address=address, zip_code=zip_code).first()
+        return redirect("/users/?status=error&message=Email / Phone Number already in use")  # Redirect with status and message in the URL
+    else:
+        existing_user_address = User.query.filter_by(address=address).first()
         
         if not existing_user_address:
             new_address = Address(address=address, zip_code=zip_code)
@@ -286,7 +279,7 @@ def add_user():
         new_user = User(id=user_id, name=name, email=email, phone=phone, address=address, zip_code=zip_code, status=status)
         db.session.add(new_user)
         db.session.commit()
-        return redirect("/?status=success&message=User added Sucessfully")  # Redirect with status and message in the URL
+        return redirect("/users/?status=success&message=User added Sucessfully")  # Redirect with status and message in the URL
 
 @app.route("/updateUserTable", methods=["POST"])
 def update_user_table():
@@ -303,9 +296,9 @@ def update_user_table():
     user_phone = User.query.filter_by(phone=new_phone).first()
     
     if user_email and user_email != user:
-        return redirect("/?status=error&message=Email already in use")
+        return redirect("/users/?status=error&message=Email already in use")
     elif user_phone and user_phone != user:
-        return redirect("/?status=error&message=Phone number already in use")
+        return redirect("/users/?status=error&message=Phone number already in use")
     else:
         user.name = new_name
         user.email = new_email
@@ -314,7 +307,7 @@ def update_user_table():
         user.zip_code = new_zip
         user.status = new_status
         db.session.commit()
-        return redirect("/?status=success&message=User was successfully updated!")
+        return redirect("/users/?status=success&message=User was successfully updated!")
 
 @app.route("/addAddress", methods=["POST"])
 def add_address():
@@ -325,24 +318,30 @@ def add_address():
     existing_address = Address.query.filter_by(address=address).first()
     
     if existing_address:
-        return redirect("/?status=error&message=Address already in use")  # Redirect with status and message in the URL
+        return redirect("/address/?status=error&message=Address already in use")  # Redirect with status and message in the URL
     else :
         new_addy = Address(id=id, address=address, zip_code=zip_code)
         db.session.add(new_addy)
         db.session.commit()
-        return redirect("/?status=success&message=User was successfully added!.")
+        return redirect("/address/?status=success&message=User was successfully added!.")
 
 
 @app.route("/deleteUser", methods=["POST"])
 def delete_user():
     user_id = request.form.get("user_id")
-
     user = User.query.get(user_id)
+    user_address = User.query.filter_by(address=user.address)
+    print(user_address)
+    if user_address.count() == 1:
+        delete_address = Address.query.filter_by(address=user.address).first()
+        db.session.delete(delete_address)
+        db.session.commit()
+    
     if user:
         db.session.delete(user)
         db.session.commit()
 
-    return redirect("/users.html")
+    return redirect("/users")
 
 
 #Author stuff
@@ -354,19 +353,19 @@ def add_author():
     # Check if the author id already exists
     existing_author_id = Author.query.get(author_id)
     if existing_author_id:
-        return redirect("/?status=error&message=Author ID already in use")  # Redirect with status and message in the URL
+        return redirect("/authors/?status=error&message=Author ID already in use")  # Redirect with status and message in the URL
 
     # Check if the author name already exists
     existing_author_name = Author.query.filter_by(name=author_name).first()
     if existing_author_name:
-        return redirect("/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
+        return redirect("/authors/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
 
     # Continue with the addition since the author id and name are unique
     new_author = Author(id=author_id, name=author_name)
     db.session.add(new_author)
     db.session.commit()
 
-    return redirect("/?status=success&message=Author added Successfully")
+    return redirect("/authors/?status=success&message=Author added Successfully")
 
 
 
@@ -380,34 +379,33 @@ def update_author_table():
         existing_author = Author.query.filter(Author.name == new_author_name, Author.id != author_id).first()
 
         if existing_author:
-            return redirect("/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
+            return redirect("/authors/?status=error&message=Author name already in use")  # Redirect with status and message in the URL
 
         author.name = new_author_name
         db.session.commit()
 
-    return redirect("/?status=success&message=Author updated successfully")
+    return redirect("/authors/?status=success&message=Author updated successfully")
 
 @app.route("/deleteAddress", methods=["POST"])
 def delete_address():
     address_id = request.form.get("address_id")
-
     address = Address.query.get(address_id)
+    
     if address:
         db.session.delete(address)
         db.session.commit()
 
-    return redirect("/")
+    return redirect("/address")
 
 @app.route("/deleteAuthor", methods=["POST"])
 def delete_author():
     author_id = request.form.get("author_id")
-
     author = Author.query.get(author_id)
     if author:
         db.session.delete(author)
         db.session.commit()
 
-    return redirect("/")
+    return redirect("/authors")
 
 
 # Delete route
@@ -420,7 +418,7 @@ def delete():
         # If the book exists, delete it from the database
         db.session.delete(book)
         db.session.commit()
-    return redirect("/")
+    return redirect("/books")
 
 
 
@@ -435,33 +433,33 @@ def home():
     addresses = Address.query.all()
     return render_template("home.html", books=books, users=users, authors=authors, loans=loans, addresses=addresses)
 
-@app.route("/books", methods=["GET", "POST"])
+@app.route("/books/", methods=["GET", "POST"])
 def book_page():
-    home()
+    # home()
     books = Book.query.all()
     return render_template("books.html", books=books)
 
-@app.route("/users", methods=["GET", "POST"])
+@app.route("/users/", methods=["GET", "POST"])
 def user_page():
-    home()
+    # home()
     users = User.query.all()
     return render_template("users.html", users=users)
 
-@app.route("/authors", methods=["GET", "POST"])
+@app.route("/authors/", methods=["GET", "POST"])
 def authors_page():
-    home()
+    # home()
     authors = Author.query.all()
     return render_template("authors.html", authors=authors)
 
-@app.route("/address", methods=["GET", "POST"])
+@app.route("/address/", methods=["GET", "POST"])
 def addresses_page():
-    home()
-    adderesses = Address.query.all()
-    return render_template("addresses.html", adderesses=adderesses)
+    # home()
+    addresses = Address.query.all()
+    return render_template("addresses.html", addresses=addresses)
 
-@app.route("/loans", methods=["GET", "POST"])
+@app.route("/loans/", methods=["GET", "POST"])
 def loan_page():
-    home()
+    # home()
     loans = Loan.query.all()
     return render_template("loans.html", loans=loans)
 
