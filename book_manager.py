@@ -442,6 +442,8 @@ def book_page():
 @app.route("/users/", methods=["GET", "POST"])
 def user_page():
     # home()
+    # User.__table__.drop(db.engine)
+    # User.__table__.create(db.engine)
     users = User.query.all()
     return render_template("users.html", users=users)
 

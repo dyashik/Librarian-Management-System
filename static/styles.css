@@ -60,7 +60,7 @@ body {
     text-align: center;
 }
 
-.add{
+.add {
     margin: 8px 8px;
 }
 
@@ -116,7 +116,7 @@ body {
 }
 
 .form input[type="submit"] {
-    width: 25%;
+    width: 50%;
     margin-top: 15px;
     background-color: #28a745;
     color: white;
