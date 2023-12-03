@@ -456,6 +456,8 @@ def authors_page():
 @app.route("/address/", methods=["GET", "POST"])
 def addresses_page():
     # home()
+    # Address.__table__.drop(db.engine)
+    # Address.__table__.create(db.engine)
     addresses = Address.query.all()
     return render_template("addresses.html", addresses=addresses)
 
