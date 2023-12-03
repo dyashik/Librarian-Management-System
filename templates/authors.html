@@ -49,13 +49,13 @@
         <h4>Add Author</h4>
     </div>
     <div class="input-group">
-        <input type="text" name="author_name" placeholder="Author Name" required><br>
+        <input type="text"  name="author_name" placeholder="Author Name" required><br>
         <input type="submit" value="Add Author">
     </div>
 </form>
 
 <h2>Authors</h2>
-<input type="text" id="authorNameSearch" placeholder="Search By Author">
+<input class="search" type="text" id="authorNameSearch" placeholder="Search By Author">
 <br>
 <table class="table">
     <thead>
@@ -77,12 +77,12 @@
                         <input type="hidden" name="author_id" value="{{ author.id }}">
                         <div class="update-fields" style="display: none;">
                             <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ author.name }}" required>
-                            <input type="submit" value="Update">
+                            <input type="submit" class="add"  value="Update">
                         </div>
                     </form>
                 </td>
-                <td>
-                    <form method="POST" action="/deleteAuthor">
+                <td style="vertical-align: middle;">
+                    <form method="POST" class="delete" action="/deleteAuthor">
                         <input type="hidden" name="author_id" value="{{ author.id }}">
                         <input type="submit" value="Delete">
                     </form>

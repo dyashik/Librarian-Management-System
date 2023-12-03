@@ -60,7 +60,7 @@
     </form>
 
     <h2>Books</h2>
-    <input type="text" id="bookSearch" placeholder="Search By Book Title">
+    <input class="search" type="text" id="bookSearch" placeholder="Search By Book Title">
     <br>
     <table class="table">
         <thead>
@@ -88,19 +88,19 @@
                 <input type="button" class="show-update-fields" value="Show Update Fields">
                 <form type="hidden" class="update-form" method="POST" action="/updateBook">
                     <input type="hidden" name="book_id" value="{{ book.id }}">
-                    <div class="update-fields" style="display: none;">
+                    <div class="update-fields mx-auto" style="display: none;text-align: center;vertical-align: middle;">
                         <input type="text" name="new_title" placeholder="New Title" value="{{ book.title }}" required>
                         <input type="text" name="new_genre" placeholder="New Genre"  value="{{ book.genre }}" required>
                         <input type="text" name="new_publisher" placeholder="New Publisher"  value="{{ book.publisher }}">
                         <input type="text" name="new_publication_year" placeholder="New Publication Year"  value="{{ book.publication_year }}">
                         <input type="text" name="new_copies_available" placeholder="New Copies Available" value="{{ book.copies_available }}" required>
                         <input type="text" name="new_author_name" placeholder="New Author Name" value="{{ book.author.name }}" required>
-                        <input type="submit" value="Update">
+                        <input type="submit" class="add" value="Update">
                     </div>
                 </form>
             </td>
             <td style="vertical-align: middle;">
-                <form method="POST" action="/delete">
+                <form method="POST" class="delete" action="/delete">
                     <input type="hidden" name="book_id" value="{{ book.id }}">
                     <input type="submit" value="Delete">
                 </form>

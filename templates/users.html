@@ -59,7 +59,7 @@
     </form> 
 
     <h2>Users</h2>
-    <input type="text" id="emailSearch" placeholder="Search By Email">
+    <input class="search" type="text" id="emailSearch" placeholder="Search By Email">
     <br>
     <table class="table">
         <thead>
@@ -95,14 +95,14 @@
                         <input type="text" name="new_address" placeholder="New Address"  value="{{ user.address }}">
                         <input type="text" name="new_zip_code" placeholder="New Zip Code"  value="{{ user.zip_code }}">
                         <input type="text" name="new_status" placeholder="New Account Status" value="{{ user.status }}">
-                        <input type="submit" value="Update">
+                        <input type="submit" class="add" value="Update">
                     </div>
                 </form>
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 <!-- Delete form for each user -->
-                <form method="POST" action="/deleteUser">
-                    <input type="hidden" name="user_id" value="{{ user.id }}"> <!-- Change here -->
+                <form method="POST" class="delete" action="/deleteUser">
+                    <input type="hidden"  name="user_id" value="{{ user.id }}"> <!-- Change here -->
                     <input type="submit" value="Delete">
                 </form>
             </td>

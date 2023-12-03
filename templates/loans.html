@@ -57,7 +57,7 @@
     </form>
     
     <h2>Loans</h2>
-    <input type="text" id="loanEmailSearch" placeholder="Search By User Email" onkeyup="filterLoansByUserEmail()">
+    <input class="search" type="text" id="loanEmailSearch" placeholder="Search By User Email" onkeyup="filterLoansByUserEmail()">
     <br>
     <table class="table">
         <thead>
@@ -88,14 +88,14 @@
                             <!-- ask yashik: do i need to add the primary key and foreign key -->
                             <input type="text" name="new_checkout_date" placeholder="New Checkout Date" value="{{ loan.checkout_date }}">
                             <input type="text" name="new_due_date" placeholder="New Due Date"  value="{{ loan.due_date }}">
-                            <input type="submit" value="Update">
+                            <input type="submit" class="add"  value="Update">
                         </div>
                     </form>
                 </td>
                 
-                <td>
+                <td style="vertical-align: middle;">
                     <!-- deleting loan for each user -->
-                    <form method="POST" action="/deleteLoan">
+                    <form method="POST" class="delete" action="/deleteLoan">
                         <input type="hidden" name="loan_id" value="{{ loan.loan_id }}">
                         <input type="submit" value="Delete">
                     </form>
